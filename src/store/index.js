@@ -4,19 +4,19 @@ import Vue from "vue";
 Vue.use(Vuex);
 
 // fake API call //
-// let inventory = {
-//   chips: {
-//     stock: 40
-//   }
-// };
+let inventory = {
+  chips: {
+    stock: 40
+  }
+};
 
-// var pingInventory = function(item) {
-//   return new Promise(resolve => {
-//     setTimeout(function() {
-//       resolve(inventory[item]);
-//     }, 3000);
-//   });
-// };
+var pingInventory = function(item) {
+  return new Promise(resolve => {
+    setTimeout(function() {
+      resolve(inventory[item]);
+    }, 3000);
+  });
+};
 
 let machines = {
   bender: {
@@ -34,13 +34,14 @@ export default new Vuex.Store({
     isCheckingMachine: false
   },
   actions: {
-    fetchFromInventory() {
-      // we're going to chain actions here //
-      // we first want to dispatch an action to check if the machine is working
-      // if it is working then run an api call
-      // so something like:
-      // dispatch("checkMachineState").then(machine => { ... })
-      // remember to change the isRestocking state while you're at it
+    fetchFromInventory({ commit, dispatch }) {
+      dispatch("checkMachineState").then(() => {
+        commit("isRestocking", true);
+        pingInventory().then(() => {
+          commit("stockItems");
+          commit("isRestocking", false);
+        });
+      });
     },
     dispense({ commit }) {
       commit("isDispensing", true);
@@ -75,7 +76,7 @@ export default new Vuex.Store({
       state.supply--;
     },
     stockItems(state) {
-      state.supply = 40;
+      state.supply = 10;
     }
   }
 });
