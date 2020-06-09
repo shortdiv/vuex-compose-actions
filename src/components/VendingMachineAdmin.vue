@@ -30,6 +30,12 @@
         <span>76424233</span>
       </div>
     </div>
+    <!-- create a failing condition for isEmpty  -->
+    <div :style="{ display: isEmpty ? 'block' : 'none' }">
+      <Fail />
+      <h2>Stock is empty</h2>
+    </div>
+    <!-- fail condition -->
     <section
       class="action-section"
       :style="{ filter: isRestocking ? 'contrast(0.5)' : 'none' }"
@@ -66,6 +72,11 @@ export default {
     Cart,
     Chips,
     Machine
+  },
+  data() {
+    return {
+      isEmpty: false
+    };
   },
   computed: {
     ...mapState([

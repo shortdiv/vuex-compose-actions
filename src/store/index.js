@@ -32,6 +32,7 @@ export default new Vuex.Store({
     isRestocking: false,
     isDispensing: false,
     isCheckingMachine: false
+    // create a new state called isEmpty //
   },
   actions: {
     fetchFromInventory({ commit, dispatch }) {
@@ -44,6 +45,7 @@ export default new Vuex.Store({
       });
     },
     dispense({ commit }) {
+      // add a conditional to check state, if state < 0, update isEmpty on a timeout like fetchInventory //
       commit("isDispensing", true);
       setTimeout(() => {
         commit("dispense");
@@ -72,6 +74,7 @@ export default new Vuex.Store({
     isCheckingMachine(state, payload) {
       state.isCheckingMachine = payload;
     },
+    // add a mutation to update isEmpty state //
     dispense(state) {
       state.supply--;
     },
