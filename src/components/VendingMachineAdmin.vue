@@ -59,6 +59,7 @@
 </template>
 
 <script>
+import Fail from "./Fail.vue";
 import Gears from "./Gears.vue";
 import Cart from "./Cart.vue";
 import Chips from "./Chips.vue";
@@ -71,7 +72,8 @@ export default {
     Gears,
     Cart,
     Chips,
-    Machine
+    Machine,
+    Fail
   },
   data() {
     return {
