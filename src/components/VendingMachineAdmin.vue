@@ -30,6 +30,12 @@
         <span>76424233</span>
       </div>
     </div>
+    <!-- create a failing condition for isEmpty  -->
+    <div :style="{ display: isEmpty ? 'block' : 'none' }">
+      <Fail />
+      <h2>Stock is empty</h2>
+    </div>
+    <!-- fail condition -->
     <section
       class="action-section"
       :style="{ filter: isRestocking ? 'contrast(0.5)' : 'none' }"
@@ -44,9 +50,7 @@
         <button class="restock-btn" @click="restock" :disabled="supply === 40">
           Restock
         </button>
-        <button class="dispense-btn" @click="dispense" :disabled="supply === 0">
-          Dispense
-        </button>
+        <button class="dispense-btn" @click="dispense">Dispense</button>
       </div>
     </section>
   </div>
@@ -57,6 +61,7 @@ import Gears from "./Gears.vue";
 import Cart from "./Cart.vue";
 import Chips from "./Chips.vue";
 import Machine from "./Machine.vue";
+import Fail from "./Fail.vue";
 import { mapState, mapActions } from "vuex";
 
 export default {
@@ -65,17 +70,33 @@ export default {
     Gears,
     Cart,
     Chips,
-    Machine
+    Machine,
+    Fail
   },
+  created() {
+    this.$store.watch(state => {
+      console.log(state);
+    });
+    this.$store.subscribeAction(action => {
+      console.log(action);
+    });
+  },
+
   computed: {
     ...mapState([
       "supply",
       "isRestocking",
       "isDispensing",
-      "isCheckingMachine"
+      "isCheckingMachine",
+      "isEmpty"
     ]),
     isInLoadingState() {
-      return this.isRestocking || this.isDispensing || this.isCheckingMachine;
+      return (
+        this.isRestocking ||
+        this.isDispensing ||
+        this.isCheckingMachine ||
+        this.isEmpty
+      );
     }
   },
   methods: {

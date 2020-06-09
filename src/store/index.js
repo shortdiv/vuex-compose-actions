@@ -6,7 +6,7 @@ Vue.use(Vuex);
 // fake API call //
 let inventory = {
   chips: {
-    stock: 40
+    stock: 10
   }
 };
 
@@ -21,7 +21,7 @@ var pingInventory = function(item) {
 let machines = {
   bender: {
     last_serviced: "feb 2019",
-    condition: "working"
+    condition: "broken"
   }
 };
 
@@ -29,6 +29,7 @@ export default new Vuex.Store({
   state: {
     machineName: "bender",
     supply: 10,
+    isEmpty: false,
     isRestocking: false,
     isDispensing: false,
     isCheckingMachine: false
@@ -37,18 +38,28 @@ export default new Vuex.Store({
     fetchFromInventory({ commit, dispatch }) {
       dispatch("checkMachineState").then(() => {
         commit("isRestocking", true);
-        pingInventory().then(() => {
-          commit("stockItems");
-          commit("isRestocking", false);
-        });
+        pingInventory("chips")
+          .then(inventory => {
+            commit("stockItems", inventory.stock);
+          })
+          .finally(() => commit("isRestocking", false));
       });
     },
-    dispense({ commit }) {
-      commit("isDispensing", true);
-      setTimeout(() => {
-        commit("dispense");
-        commit("isDispensing", false);
-      }, 3000);
+    dispense({ state, commit }) {
+      if (state.supply <= 0) {
+        commit("isEmpty", true);
+        return new Promise(() => {
+          setTimeout(function() {
+            commit("isEmpty", false);
+          }, 3000);
+        });
+      } else {
+        commit("isDispensing", true);
+        setTimeout(() => {
+          commit("dispense");
+          commit("isDispensing", false);
+        }, 3000);
+      }
     },
     // create an action to check machine state //
     checkMachineState({ state, commit }) {
@@ -72,11 +83,14 @@ export default new Vuex.Store({
     isCheckingMachine(state, payload) {
       state.isCheckingMachine = payload;
     },
+    isEmpty(state, payload) {
+      state.isEmpty = payload;
+    },
     dispense(state) {
       state.supply--;
     },
     stockItems(state) {
-      state.supply = 10;
+      state.supply = 40;
     }
   }
 });
